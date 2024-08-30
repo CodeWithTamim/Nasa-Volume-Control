@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Nasa Volume Control</string>
+    <string name="label_welcome_to_nasa_volume_control">Welcome To Nasa Volume Control</string>
+    <string name="label_start_the_window_to_get_started">Start The Window To Get Started</string>
+    <string name="label_start_floating_window">Start Floating Window</string>
+    <string name="label_start_on_boot">Start On Boot</string>
+    <string name="label_stop_floating_window">Stop Floating Window</string>
+    <string name="label_please_grant_the_permission_to_draw_over_other_apps">Please grant the permission to draw over other apps</string>
+</resources>
