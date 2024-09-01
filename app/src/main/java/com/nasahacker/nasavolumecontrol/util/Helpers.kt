@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
+import com.nasahacker.nasavolumecontrol.util.Constants.ADVANCED_MODE_ON
 import com.nasahacker.nasavolumecontrol.util.Constants.APP_PREF
 import com.nasahacker.nasavolumecontrol.util.Constants.START_ON_BOOT
 
@@ -61,5 +62,17 @@ object Helpers {
     fun getIsStartOnBoot(context: Context): Boolean {
         return getSharedPreferences(context)
             .getBoolean(START_ON_BOOT, false)
+    }
+
+    fun setIsAdvancedMode(context: Context, isStartOnBoot: Boolean) {
+        getSharedPreferences(context)
+            .edit()
+            .putBoolean(ADVANCED_MODE_ON, isStartOnBoot)
+            .apply()
+    }
+
+    fun getIsAdvancedMode(context: Context): Boolean {
+        return getSharedPreferences(context)
+            .getBoolean(ADVANCED_MODE_ON, false)
     }
 }

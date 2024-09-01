@@ -6,4 +6,10 @@
     <string name="label_start_on_boot">Start On Boot</string>
     <string name="label_stop_floating_window">Stop Floating Window</string>
     <string name="label_please_grant_the_permission_to_draw_over_other_apps">Please grant the permission to draw over other apps</string>
+    <string name="label_advanced_controls">Advanced controls</string>
+    <string name="label_media">Media</string>
+    <string name="label_call">Call</string>
+    <string name="label_ringtone">Ringtone</string>
+    <string name="label_notification">Notification</string>
+    <string name="label_alarm">Alarm</string>
 </resources>

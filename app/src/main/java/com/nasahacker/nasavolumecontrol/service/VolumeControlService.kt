@@ -2,7 +2,10 @@ package com.nasahacker.nasavolumecontrol.service
 
 import android.app.Notification
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.media.AudioManager
@@ -15,13 +18,13 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.ServiceCompat
 import com.nasahacker.nasavolumecontrol.R
 import com.nasahacker.nasavolumecontrol.util.Constants.NOTIFICATION_CHANNEL_ID
 import com.nasahacker.nasavolumecontrol.util.Constants.NOTIFICATION_FOREGROUND_ID
+import com.nasahacker.nasavolumecontrol.util.Helpers
 
 class VolumeControlService : Service() {
 
@@ -40,6 +43,19 @@ class VolumeControlService : Service() {
     private var isDragging: Boolean = false
     private var isVisible: Boolean = false
     private var isMuted: Boolean = false
+
+    private lateinit var muteButton: ImageView
+    private lateinit var pgCall: SeekBar
+    private lateinit var pgRingtone: SeekBar
+    private lateinit var pgNotification: SeekBar
+    private lateinit var pgAlarm: SeekBar
+    private lateinit var pgMedia: SeekBar
+
+    private val volumeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            updateSeekBars()
+        }
+    }
 
     // Called when the service is created
     override fun onCreate() {
@@ -61,8 +77,53 @@ class VolumeControlService : Service() {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
 
+        // Register volume change receiver
+        registerReceiver(volumeReceiver, IntentFilter("android.media.VOLUME_CHANGED_ACTION"))
+
         // Inflate the floating view layout
-        floatingView = LayoutInflater.from(this).inflate(R.layout.floting_volume_layout, null)
+        if (!Helpers.getIsAdvancedMode(this)) {
+            floatingView =
+                LayoutInflater.from(this).inflate(R.layout.floting_vol_layout_normal, null)
+            floatingView.findViewById<ImageView>(R.id.upButton).setOnClickListener {
+                increaseSound(AudioManager.STREAM_MUSIC)
+            }
+
+            floatingView.findViewById<ImageView>(R.id.downButton).setOnClickListener {
+                decreaseSound(AudioManager.STREAM_MUSIC)
+            }
+
+        } else {
+            floatingView =
+                LayoutInflater.from(this).inflate(R.layout.floting_vol_layout_advanced, null)
+            pgMedia = floatingView.findViewById(R.id.pgMedia)
+            pgCall = floatingView.findViewById(R.id.pgCall)
+            pgAlarm = floatingView.findViewById(R.id.pgAlarm)
+            pgRingtone = floatingView.findViewById(R.id.pgRingtone)
+            pgNotification = floatingView.findViewById(R.id.pgNotification)
+
+            pgMedia.max = getMaxVol(AudioManager.STREAM_MUSIC)
+            pgCall.max = getMaxVol(AudioManager.STREAM_VOICE_CALL)
+            pgAlarm.max = getMaxVol(AudioManager.STREAM_ALARM)
+            pgRingtone.max = getMaxVol(AudioManager.STREAM_RING)
+            pgNotification.max = getMaxVol(AudioManager.STREAM_NOTIFICATION)
+
+            updateSeekBars() // Initialize SeekBar values
+
+            pgMedia.setOnSeekBarChangeListener(createSeekBarChangeListener(AudioManager.STREAM_MUSIC))
+            pgCall.setOnSeekBarChangeListener(createSeekBarChangeListener(AudioManager.STREAM_VOICE_CALL))
+            pgAlarm.setOnSeekBarChangeListener(createSeekBarChangeListener(AudioManager.STREAM_ALARM))
+            pgRingtone.setOnSeekBarChangeListener(createSeekBarChangeListener(AudioManager.STREAM_RING))
+            pgNotification.setOnSeekBarChangeListener(createSeekBarChangeListener(AudioManager.STREAM_NOTIFICATION))
+        }
+        muteButton = floatingView.findViewById(R.id.muteButton)
+
+        // Set up click listeners for buttons
+        floatingView.findViewById<ImageView>(R.id.minMax).setOnClickListener {
+            toggleVisibility()
+        }
+        muteButton.setOnClickListener {
+            toggleMute()
+        }
 
         // Check if the audio is initially muted
         isMuted = (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0)
@@ -122,54 +183,25 @@ class VolumeControlService : Service() {
                 else -> false
             }
         }
-
-        // Set up click listeners for buttons
-        floatingView.findViewById<ImageView>(R.id.minMax).setOnClickListener {
-            toggleVisibility()
-        }
-
-        floatingView.findViewById<ImageView>(R.id.upButton).setOnClickListener {
-            increaseSound()
-        }
-
-        floatingView.findViewById<ImageView>(R.id.downButton).setOnClickListener {
-            decreaseSound()
-        }
-
-        floatingView.findViewById<ImageView>(R.id.muteButton).setOnClickListener {
-            toggleMute()
-        }
     }
 
     // Increase the media volume and show a toast message with volume percentage
-    private fun increaseSound() {
-        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, 0)
+    private fun increaseSound(type: Int) {
+        audioManager.adjustStreamVolume(type, AudioManager.ADJUST_RAISE, 0)
+        updateSeekBars() // Update SeekBars to reflect the change
         showVolumeToast()
     }
 
     // Decrease the media volume and show a toast message with volume percentage
-    private fun decreaseSound() {
-        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, 0)
+    private fun decreaseSound(type: Int) {
+        audioManager.adjustStreamVolume(type, AudioManager.ADJUST_LOWER, 0)
+        updateSeekBars() // Update SeekBars to reflect the change
         showVolumeToast()
     }
 
-    // Toggle mute status and show a toast message
-    private fun toggleMute() {
-        isMuted = !isMuted
-        audioManager.setStreamVolume(
-            AudioManager.STREAM_MUSIC,
-            if (isMuted) 0 else audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
-            0
-        )
-        showToast(if (isMuted) "Muted" else "Unmuted")
-    }
 
-    // Show the volume percentage in a toast message
-    private fun showVolumeToast() {
-        val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        val volumePercentage = (currentVolume / maxVolume.toFloat() * 100).toInt()
-        showToast("Volume: $volumePercentage%")
+    fun getMaxVol(type: Int): Int {
+        return audioManager.getStreamMaxVolume(type)
     }
 
     // Toggle the visibility of the floating view
@@ -179,27 +211,65 @@ class VolumeControlService : Service() {
         isVisible = !isVisible
     }
 
-    // Show a toast message
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    // Toggle mute state
+    private fun toggleMute() {
+        isMuted = !isMuted
+        audioManager.setStreamVolume(
+            AudioManager.STREAM_MUSIC,
+            if (isMuted) 0 else audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+            0
+        )
+        updateSeekBars() // Update SeekBars to reflect the change
+        muteButton.setImageResource(if (isMuted) R.drawable.baseline_volume_off_24 else R.drawable.baseline_volume_off_24)
     }
 
-    //get notification
+    // Update SeekBars to reflect the current system volume
+    private fun updateSeekBars() {
+        if (this::pgMedia.isInitialized) {
+            pgMedia.progress = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+            pgCall.progress = audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL)
+            pgAlarm.progress = audioManager.getStreamVolume(AudioManager.STREAM_ALARM)
+            pgRingtone.progress = audioManager.getStreamVolume(AudioManager.STREAM_RING)
+            pgNotification.progress = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION)
+        }
+    }
+
+    // Create a SeekBar change listener for updating volume
+    private fun createSeekBarChangeListener(type: Int) = object : SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            if (fromUser) {
+                audioManager.setStreamVolume(type, progress, 0)
+            }
+        }
+
+        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+    }
+
+    // Show a toast message with the current volume percentage
+    private fun showVolumeToast() {
+        val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        val volumePercentage = (volume / maxVolume.toDouble() * 100).toInt()
+        Toast.makeText(this, "Volume: $volumePercentage%", Toast.LENGTH_SHORT).show()
+    }
+
+    // Get the notification for the foreground service
     private fun getNotification(): Notification {
-        return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher) // Ensure this is a valid drawable resource
-            .setContentTitle("Volume Control Service Running")
-            .setContentText("Volume Control Service is running in the background.")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .build()
+        val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        builder.setContentTitle("Volume Control Service")
+            .setContentText("Running in background")
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setOngoing(true)
+        return builder.build()
     }
 
 
     // Called when the service is destroyed
     override fun onDestroy() {
         super.onDestroy()
-        if (::floatingView.isInitialized) {
-            windowManager.removeView(floatingView)
-        }
+        windowManager.removeView(floatingView)
+        unregisterReceiver(volumeReceiver)
     }
 }

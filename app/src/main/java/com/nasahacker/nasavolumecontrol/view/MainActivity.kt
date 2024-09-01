@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupInitialState() {
         // Set initial state of the boot start switch
         binding.switchBootStart.isChecked = Helpers.getIsStartOnBoot(this)
+        binding.switchAdvancedControls.isChecked = Helpers.getIsAdvancedMode(this)
         Helpers.requestNotificationPermission(this)
     }
 
@@ -33,6 +34,11 @@ class MainActivity : AppCompatActivity() {
         // Listener for the boot start switch
         binding.switchBootStart.setOnCheckedChangeListener { _, isChecked ->
             Helpers.setIsStartOnBoot(this, isChecked)
+        }
+
+        //Listener for advanced controls
+        binding.switchAdvancedControls.setOnCheckedChangeListener { _, isChecked ->
+            Helpers.setIsAdvancedMode(this, isChecked)
         }
 
         // Listener for the stop button

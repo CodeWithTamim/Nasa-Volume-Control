@@ -7,4 +7,5 @@ object Constants {
 
     const val APP_PREF = "NASA_VOLUME_CONTROL"
     const val START_ON_BOOT = "isStartOnBoot"
+    const val ADVANCED_MODE_ON = "advancedModeOn"
 }
