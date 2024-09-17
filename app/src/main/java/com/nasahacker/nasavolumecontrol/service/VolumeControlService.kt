@@ -22,9 +22,10 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.nasahacker.nasavolumecontrol.R
-import com.nasahacker.nasavolumecontrol.util.Constants.NOTIFICATION_CHANNEL_ID
-import com.nasahacker.nasavolumecontrol.util.Constants.NOTIFICATION_FOREGROUND_ID
-import com.nasahacker.nasavolumecontrol.util.Helpers
+import com.nasahacker.nasavolumecontrol.util.Constant
+import com.nasahacker.nasavolumecontrol.util.Constant.NOTIFICATION_CHANNEL_ID
+import com.nasahacker.nasavolumecontrol.util.Constant.NOTIFICATION_FOREGROUND_ID
+import com.nasahacker.nasavolumecontrol.util.Helper
 
 class VolumeControlService : Service() {
 
@@ -51,6 +52,8 @@ class VolumeControlService : Service() {
     private lateinit var pgAlarm: SeekBar
     private lateinit var pgMedia: SeekBar
 
+    companion object { var isServiceRunning: Boolean = false }
+
     private val volumeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             updateSeekBars()
@@ -72,16 +75,17 @@ class VolumeControlService : Service() {
                 getNotification(),
             )
         }
+        isServiceRunning = true
 
         // Initialize WindowManager and AudioManager
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
 
         // Register volume change receiver
-        registerReceiver(volumeReceiver, IntentFilter("android.media.VOLUME_CHANGED_ACTION"))
+        registerReceiver(volumeReceiver, IntentFilter(Constant.VOL_CHANGE_ACTION))
 
         // Inflate the floating view layout
-        if (!Helpers.getIsAdvancedMode(this)) {
+        if (!Helper.getIsAdvancedMode(this)) {
             floatingView =
                 LayoutInflater.from(this).inflate(R.layout.floting_vol_layout_normal, null)
             floatingView.findViewById<ImageView>(R.id.upButton).setOnClickListener {
@@ -200,7 +204,7 @@ class VolumeControlService : Service() {
     }
 
 
-    fun getMaxVol(type: Int): Int {
+    private fun getMaxVol(type: Int): Int {
         return audioManager.getStreamMaxVolume(type)
     }
 
@@ -220,7 +224,7 @@ class VolumeControlService : Service() {
             0
         )
         updateSeekBars() // Update SeekBars to reflect the change
-        muteButton.setImageResource(if (isMuted) R.drawable.baseline_volume_off_24 else R.drawable.baseline_volume_off_24)
+        muteButton.setImageResource(if (isMuted) R.drawable.baseline_volume_off_24 else R.drawable.baseline_volume_mute_24)
     }
 
     // Update SeekBars to reflect the current system volume
@@ -238,7 +242,12 @@ class VolumeControlService : Service() {
     private fun createSeekBarChangeListener(type: Int) = object : SeekBar.OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             if (fromUser) {
-                audioManager.setStreamVolume(type, progress, 0)
+                try {
+                    audioManager.setStreamVolume(type, progress, 0)
+                } catch (e: SecurityException) {
+                    e.printStackTrace()
+                    Helper.requestDoNotDisturbAccess(this@VolumeControlService)
+                }
             }
         }
 
@@ -252,14 +261,15 @@ class VolumeControlService : Service() {
         val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val volumePercentage = (volume / maxVolume.toDouble() * 100).toInt()
-        Toast.makeText(this, "Volume: $volumePercentage%", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.label_volume, volumePercentage), Toast.LENGTH_SHORT)
+            .show()
     }
 
     // Get the notification for the foreground service
     private fun getNotification(): Notification {
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-        builder.setContentTitle("Volume Control Service")
-            .setContentText("Running in background")
+        builder.setContentTitle(getString(R.string.label_volume_control_service))
+            .setContentText(getString(R.string.label_running_in_background))
             .setSmallIcon(R.mipmap.ic_launcher)
             .setOngoing(true)
         return builder.build()
@@ -271,5 +281,6 @@ class VolumeControlService : Service() {
         super.onDestroy()
         windowManager.removeView(floatingView)
         unregisterReceiver(volumeReceiver)
+        isServiceRunning = false
     }
 }

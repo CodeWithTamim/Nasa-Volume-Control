@@ -1,11 +1,11 @@
-package com.nasahacker
+package com.nasahacker.nasavolumecontrol
 
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
-import com.nasahacker.nasavolumecontrol.util.Constants
+import com.nasahacker.nasavolumecontrol.util.Constant
 
 class NasaApplication : Application() {
     override fun onCreate() {
@@ -17,8 +17,8 @@ class NasaApplication : Application() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = NotificationManagerCompat.from(this)
             val channel = NotificationChannel(
-                Constants.NOTIFICATION_CHANNEL_ID,
-                Constants.NOTIFICATION_CHANNEL_NAME,
+                Constant.NOTIFICATION_CHANNEL_ID,
+                Constant.NOTIFICATION_CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_NONE
             )
             manager.createNotificationChannel(channel)

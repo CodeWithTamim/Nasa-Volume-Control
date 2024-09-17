@@ -12,4 +12,9 @@
     <string name="label_ringtone">Ringtone</string>
     <string name="label_notification">Notification</string>
     <string name="label_alarm">Alarm</string>
+    <string name="label_volume">Volume: %1$d%%</string>
+    <string name="label_volume_control_service">Volume Control Service</string>
+    <string name="label_running_in_background">Running in background</string>
+    <string name="label_package">package:%1$s</string>
+    <string name="label_grant_dnd_access_please">Grant DND Access Please</string>
 </resources>

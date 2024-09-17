@@ -14,10 +14,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_marginBottom="20dp"
         android:text="@string/label_welcome_to_nasa_volume_control"
         android:textColor="@color/white"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
@@ -70,8 +71,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:thumbTint="@color/white"
-                        app:trackDecorationTint="#5C6BC0"
-                        app:trackTint="#5C6BC0" />
+                        app:trackDecorationTint="@color/switch_track"
+                        app:trackTint="@color/switch_track" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -94,8 +95,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:thumbTint="@color/white"
-                        app:trackDecorationTint="#5C6BC0"
-                        app:trackTint="#5C6BC0" />
+                        app:trackDecorationTint="@color/switch_track"
+                        app:trackTint="@color/switch_track" />
                 </LinearLayout>
 
             </LinearLayout>

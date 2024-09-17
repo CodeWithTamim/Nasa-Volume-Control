@@ -2,32 +2,34 @@ package com.nasahacker.nasavolumecontrol.util
 
 import android.Manifest
 import android.app.Activity
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity.NOTIFICATION_SERVICE
 import androidx.core.app.ActivityCompat
-import com.nasahacker.nasavolumecontrol.util.Constants.ADVANCED_MODE_ON
-import com.nasahacker.nasavolumecontrol.util.Constants.APP_PREF
-import com.nasahacker.nasavolumecontrol.util.Constants.START_ON_BOOT
+import com.nasahacker.nasavolumecontrol.R
+import com.nasahacker.nasavolumecontrol.util.Constant.ADVANCED_MODE_ON
+import com.nasahacker.nasavolumecontrol.util.Constant.APP_PREF
+import com.nasahacker.nasavolumecontrol.util.Constant.START_ON_BOOT
 
-object Helpers {
+
+object Helper {
     fun canDrawOverlay(context: Context): Boolean {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) true
-        else Settings.canDrawOverlays(context)
+        return Settings.canDrawOverlays(context)
     }
 
     fun requestOverlayPermission(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!canDrawOverlay(context)) {
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:${context.packageName}")
-                )
-                context.startActivity(intent)
-            }
+        if (!canDrawOverlay(context)) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse(context.getString(R.string.label_package, context.packageName))
+            )
+            context.startActivity(intent)
         }
     }
 
@@ -48,6 +50,21 @@ object Helpers {
         }
 
     }
+
+    fun requestDoNotDisturbAccess(context: Context) {
+        val notificationManager =
+            context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        if (!notificationManager.isNotificationPolicyAccessGranted) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.label_grant_dnd_access_please), Toast.LENGTH_SHORT
+            ).show()
+            // Request permission
+            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+            context.startActivity(intent)
+        }
+    }
+
 
     private fun getSharedPreferences(context: Context) =
         context.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE)
