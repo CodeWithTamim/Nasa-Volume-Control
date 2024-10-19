@@ -100,7 +100,22 @@
                 </LinearLayout>
 
             </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_window_opacity"
+                android:layout_margin="10dp"
+                android:textColor="@color/white"
+                />
 
+            <SeekBar
+                android:id="@+id/sbOpacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:progressTint="@color/white"
+                android:thumbTint="@color/white"
+                android:max="100"
+                />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStart"
                 android:layout_width="match_parent"

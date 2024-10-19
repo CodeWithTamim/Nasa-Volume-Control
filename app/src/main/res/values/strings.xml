@@ -17,4 +17,6 @@
     <string name="label_running_in_background">Running in background</string>
     <string name="label_package">package:%1$s</string>
     <string name="label_grant_dnd_access_please">Grant DND Access Please</string>
+    <string name="label_window_opacity">Window Opacity</string>
+    <string name="label_min_progress_is">Min Progress is %d%%</string>
 </resources>

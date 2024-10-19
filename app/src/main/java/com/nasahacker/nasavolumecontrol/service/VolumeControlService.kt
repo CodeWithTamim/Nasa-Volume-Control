@@ -121,6 +121,8 @@ class VolumeControlService : Service() {
         }
         muteButton = floatingView.findViewById(R.id.muteButton)
 
+        floatingView.alpha = Helper.getLayoutOpacity(this)
+
         // Set up click listeners for buttons
         floatingView.findViewById<ImageView>(R.id.minMax).setOnClickListener {
             toggleVisibility()

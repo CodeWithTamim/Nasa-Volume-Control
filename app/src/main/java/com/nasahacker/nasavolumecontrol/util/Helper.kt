@@ -13,16 +13,27 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity.NOTIFICATION_SERVICE
 import androidx.core.app.ActivityCompat
 import com.nasahacker.nasavolumecontrol.R
+import com.nasahacker.nasavolumecontrol.service.VolumeControlService
 import com.nasahacker.nasavolumecontrol.util.Constant.ADVANCED_MODE_ON
 import com.nasahacker.nasavolumecontrol.util.Constant.APP_PREF
+import com.nasahacker.nasavolumecontrol.util.Constant.LAYOUT_OPACITY
+import com.nasahacker.nasavolumecontrol.util.Constant.PERMISSION_REQUEST_CODE
 import com.nasahacker.nasavolumecontrol.util.Constant.START_ON_BOOT
 
 
 object Helper {
+    /**
+     * Checks the overlay permission
+     * @param context
+     */
     fun canDrawOverlay(context: Context): Boolean {
         return Settings.canDrawOverlays(context)
     }
 
+    /**
+     * Requests the overlay permission
+     * @param context
+     */
     fun requestOverlayPermission(context: Context) {
         if (!canDrawOverlay(context)) {
             val intent = Intent(
@@ -33,6 +44,10 @@ object Helper {
         }
     }
 
+    /**
+     * Request notification permission
+     * @param activity
+     */
     fun requestNotificationPermission(activity: Activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(
@@ -43,14 +58,17 @@ object Helper {
                 ActivityCompat.requestPermissions(
                     activity,
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    101
+                    PERMISSION_REQUEST_CODE
                 )
             }
 
         }
-
     }
 
+    /**
+     * Request do not disturb access
+     * @param context
+     */
     fun requestDoNotDisturbAccess(context: Context) {
         val notificationManager =
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -65,10 +83,18 @@ object Helper {
         }
     }
 
-
+    /**
+     * Return SharedPrefs instance
+     * @param context
+     */
     private fun getSharedPreferences(context: Context) =
         context.getSharedPreferences(APP_PREF, Context.MODE_PRIVATE)
 
+    /**
+     * Sets flag value for boot
+     * @param context
+     * @param isStartOnBoot
+     */
     fun setIsStartOnBoot(context: Context, isStartOnBoot: Boolean) {
         getSharedPreferences(context)
             .edit()
@@ -76,11 +102,20 @@ object Helper {
             .apply()
     }
 
+    /**
+     * Returns flag value for boot
+     * @param context
+     */
     fun getIsStartOnBoot(context: Context): Boolean {
         return getSharedPreferences(context)
             .getBoolean(START_ON_BOOT, false)
     }
 
+    /**
+     * Sets flag value for advanced mode
+     * @param context
+     * @param isStartOnBoot
+     */
     fun setIsAdvancedMode(context: Context, isStartOnBoot: Boolean) {
         getSharedPreferences(context)
             .edit()
@@ -88,8 +123,79 @@ object Helper {
             .apply()
     }
 
+    /**
+     * Sets flag value for opacity mode
+     * @param context
+     * @param opacity
+     */
+    fun setLayoutOpacity(context: Context, opacity: Float) {
+        getSharedPreferences(context)
+            .edit()
+            .putFloat(LAYOUT_OPACITY, opacity)
+            .apply()
+    }
+
+    /**
+     * Returns flag value for opacity
+     * @param context
+     */
+    fun getLayoutOpacity(context: Context): Float {
+        return getSharedPreferences(context)
+            .getFloat(LAYOUT_OPACITY, 1F)
+    }
+
+    /**
+     * Returns flag value for advanced mode
+     * @param context
+     */
     fun getIsAdvancedMode(context: Context): Boolean {
         return getSharedPreferences(context)
             .getBoolean(ADVANCED_MODE_ON, false)
     }
+
+    /**
+     * Restarts the service
+     * @param context
+     */
+
+    fun restartService(context: Context) {
+        if (VolumeControlService.isServiceRunning) {
+            if (canDrawOverlay(context)) {
+                context.stopService(Intent(context, VolumeControlService::class.java))
+                context.startService(Intent(context, VolumeControlService::class.java))
+            }
+        }
+    }
+
+    /**
+     * Starts the service
+     * @param context
+     */
+
+    fun startService(context: Context) {
+        if (!VolumeControlService.isServiceRunning) {
+            if (canDrawOverlay(context)) {
+                context.startService(Intent(context, VolumeControlService::class.java))
+            }
+        }
+    }
+
+    /**
+     * Stops the service
+     * @param context
+     */
+
+
+    fun stopService(context: Context) {
+        if (VolumeControlService.isServiceRunning) {
+            context.stopService(Intent(context, VolumeControlService::class.java))
+        }
+    }
+
+    /**
+     * Send the progress in float
+     * @param progress
+     */
+
+    fun getFloatProgress(progress: Int): Float = progress / 100F
 }
