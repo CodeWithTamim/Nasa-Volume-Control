@@ -4,9 +4,9 @@
 **Nasa Volume Control** is an easy-to-use volume management app that allows users to control different audio streams on their Android devices. Whether it's adjusting media, ringtone, or notification volume, this app provides a straightforward interface to manage all audio settings in one place.
 
 <p align="center">
-  <img src="https://play-lh.googleusercontent.com/ZsJWpkoFbmllrF8FmpX4GWpz5n100fPmIWpIhiM3rP0uMIEGWkKEUgvDturgy2JXqeAS=w1052-h592" alt="Nasa Volume Control Screenshot 1" width="300"/>
-  <img src="https://play-lh.googleusercontent.com/XvHdSI_hzO6QmYunsZW-fc2Zs2pSF9B94vo-1FUflERrXCTqkhBCoE9kMbeX2S3BTQ=w1052-h592" alt="Nasa Volume Control Screenshot 2" width="300"/>
-  <img src="https://play-lh.googleusercontent.com/RFNrSDEG0jH-ywuiAtprUnSM1vGJkA8sBl4mz03qXiJCAOmq67jMemcovu35IW2s574s=w1052-h592" alt="Nasa Volume Control Screenshot 3" width="300"/>
+  <img src="https://play-lh.googleusercontent.com/ZsJWpkoFbmllrF8FmpX4GWpz5n100fPmIWpIhiM3rP0uMIEGWkKEUgvDturgy2JXqeAS=w1052-h592" alt="Nasa Volume Control Screenshot 1" width="200"/>
+  <img src="https://play-lh.googleusercontent.com/XvHdSI_hzO6QmYunsZW-fc2Zs2pSF9B94vo-1FUflERrXCTqkhBCoE9kMbeX2S3BTQ=w1052-h592" alt="Nasa Volume Control Screenshot 2" width="200"/>
+  <img src="https://play-lh.googleusercontent.com/RFNrSDEG0jH-ywuiAtprUnSM1vGJkA8sBl4mz03qXiJCAOmq67jMemcovu35IW2s574s=w1052-h592" alt="Nasa Volume Control Screenshot 3" width="200"/>
 </p>
 
 ## 🌟 Features
