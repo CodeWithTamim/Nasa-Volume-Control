@@ -2,10 +2,10 @@
 # Nasa Volume Control 🎛️
 
 [![Android](https://img.shields.io/badge/Platform-Android-green?logo=android)](https://developer.android.com)  
-[![Kotlin](https://img.shields.io/badge/Kotlin-1.5-blue?logo=kotlin)](https://kotlinlang.org)  
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-blue?logo=kotlin)](https://kotlinlang.org)  
 [![Material Design 3](https://img.shields.io/badge/Material%20Design-3-blue?logo=material-design)](https://material.io)  
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-green.svg)](LICENSE)  
-[![Version](https://img.shields.io/badge/Version-1.0.0-blue)](https://github.com/CodeWithTamim/Nasa-Volume-Control)  
+[![Version](https://img.shields.io/badge/Version-1.0.4-blue)](https://github.com/CodeWithTamim/Nasa-Volume-Control)  
 [![Get it on Google Play](https://img.shields.io/badge/Google%20Play-Download-green?logo=google-play)](https://play.google.com/store/apps/details?id=com.nasahacker.nasavolumecontrol&hl=en)
 
 **Nasa Volume Control** is a straightforward volume management app designed to allow users control over different audio streams on Android devices. From media to notifications, this app simplifies volume management in one user-friendly interface.
