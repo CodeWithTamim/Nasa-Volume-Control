@@ -25,7 +25,7 @@ import com.nasahacker.nasavolumecontrol.R
 import com.nasahacker.nasavolumecontrol.util.Constant
 import com.nasahacker.nasavolumecontrol.util.Constant.NOTIFICATION_CHANNEL_ID
 import com.nasahacker.nasavolumecontrol.util.Constant.NOTIFICATION_FOREGROUND_ID
-import com.nasahacker.nasavolumecontrol.util.Helper
+import com.nasahacker.nasavolumecontrol.util.AppUtils
 
 class VolumeControlService : Service() {
 
@@ -85,7 +85,7 @@ class VolumeControlService : Service() {
         registerReceiver(volumeReceiver, IntentFilter(Constant.VOL_CHANGE_ACTION))
 
         // Inflate the floating view layout
-        if (!Helper.getIsAdvancedMode(this)) {
+        if (!AppUtils.getIsAdvancedMode(this)) {
             floatingView =
                 LayoutInflater.from(this).inflate(R.layout.floting_vol_layout_normal, null)
             floatingView.findViewById<ImageView>(R.id.upButton).setOnClickListener {
@@ -121,7 +121,7 @@ class VolumeControlService : Service() {
         }
         muteButton = floatingView.findViewById(R.id.muteButton)
 
-        floatingView.alpha = Helper.getLayoutOpacity(this)
+        floatingView.alpha = AppUtils.getLayoutOpacity(this)
 
         // Set up click listeners for buttons
         floatingView.findViewById<ImageView>(R.id.minMax).setOnClickListener {
@@ -248,7 +248,7 @@ class VolumeControlService : Service() {
                     audioManager.setStreamVolume(type, progress, 0)
                 } catch (e: SecurityException) {
                     e.printStackTrace()
-                    Helper.requestDoNotDisturbAccess(this@VolumeControlService)
+                    AppUtils.requestDoNotDisturbAccess(this@VolumeControlService)
                 }
             }
         }

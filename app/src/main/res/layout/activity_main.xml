@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_color"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="24dp"
@@ -14,10 +12,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginBottom="20dp"
+        android:gravity="center"
         android:text="@string/label_welcome_to_nasa_volume_control"
-        android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -26,18 +23,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="28dp"
         android:text="@string/label_start_the_window_to_get_started"
-        android:textColor="@color/white"
         android:textSize="16sp" />
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:cardBackgroundColor="@color/default_color"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="8dp">
+        android:layout_marginBottom="28dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,9 +39,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -62,17 +53,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/label_advanced_controls"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textAlignment="viewStart" />
+                        android:textAlignment="viewStart"
+                        android:textSize="16sp" />
 
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switch_advanced_controls"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:thumbTint="@color/white"
-                        app:trackDecorationTint="@color/switch_track"
-                        app:trackTint="@color/switch_track" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -86,44 +73,35 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/label_start_on_boot"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textAlignment="viewEnd" />
+                        android:textAlignment="viewEnd"
+                        android:textSize="16sp" />
 
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switch_boot_start"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:thumbTint="@color/white"
-                        app:trackDecorationTint="@color/switch_track"
-                        app:trackTint="@color/switch_track" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
             </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_window_opacity"
                 android:layout_margin="10dp"
-                android:textColor="@color/white"
-                />
+                android:text="@string/label_window_opacity" />
 
             <SeekBar
                 android:id="@+id/sbOpacity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:progressTint="@color/white"
-                android:thumbTint="@color/white"
-                android:max="100"
-                />
+                android:max="100" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:backgroundTint="@color/white"
                 android:text="@string/label_start_floating_window"
-                android:textColor="@color/black"
                 app:cornerRadius="8dp" />
 
             <com.google.android.material.button.MaterialButton
@@ -131,9 +109,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:backgroundTint="@color/white"
                 android:text="@string/label_stop_floating_window"
-                android:textColor="@color/black"
                 app:cornerRadius="8dp" />
 
         </LinearLayout>

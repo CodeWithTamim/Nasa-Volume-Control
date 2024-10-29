@@ -1,20 +1,17 @@
 package com.nasahacker.nasavolumecontrol.view
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.nasahacker.nasavolumecontrol.R
 import com.nasahacker.nasavolumecontrol.databinding.ActivityMainBinding
-import com.nasahacker.nasavolumecontrol.service.VolumeControlService
 import com.nasahacker.nasavolumecontrol.util.Constant
-import com.nasahacker.nasavolumecontrol.util.Helper
+import com.nasahacker.nasavolumecontrol.util.AppUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -26,6 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(binding.root)
         setupInitialState()
         setupListeners()
@@ -33,10 +31,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupInitialState() {
         // Set initial state of the boot start switch
-        binding.switchBootStart.isChecked = Helper.getIsStartOnBoot(this)
-        binding.switchAdvancedControls.isChecked = Helper.getIsAdvancedMode(this)
-        binding.sbOpacity.progress = (Helper.getLayoutOpacity(this) * 100).toInt()
-        Helper.requestNotificationPermission(this)
+        binding.switchBootStart.isChecked = AppUtils.getIsStartOnBoot(this)
+        binding.switchAdvancedControls.isChecked = AppUtils.getIsAdvancedMode(this)
+        binding.sbOpacity.progress = (AppUtils.getLayoutOpacity(this) * 100).toInt()
+        AppUtils.requestNotificationPermission(this)
     }
 
     private fun setupListeners() {
@@ -51,8 +49,8 @@ class MainActivity : AppCompatActivity() {
                     binding.sbOpacity.progress = Constant.SEEK_BAR_MIN_PROGRESS
                 } else {
                     lifecycleScope.launch(Dispatchers.IO) {
-                        Helper.setLayoutOpacity(this@MainActivity, Helper.getFloatProgress(progress))
-                        Helper.restartService(this@MainActivity)
+                        AppUtils.setLayoutOpacity(this@MainActivity, AppUtils.getFloatProgress(progress))
+                        AppUtils.restartService(this@MainActivity)
                     }
                 }
             }
@@ -68,26 +66,26 @@ class MainActivity : AppCompatActivity() {
         })
         // Listener for the boot start switch
         binding.switchBootStart.setOnCheckedChangeListener { _, isChecked ->
-            Helper.setIsStartOnBoot(this, isChecked)
+            AppUtils.setIsStartOnBoot(this, isChecked)
         }
 
         //Listener for advanced controls
         binding.switchAdvancedControls.setOnCheckedChangeListener { _, isChecked ->
-            Helper.setIsAdvancedMode(this, isChecked)
-            Helper.restartService(this)
+            AppUtils.setIsAdvancedMode(this, isChecked)
+            AppUtils.restartService(this)
         }
 
         // Listener for the stop button
         binding.btnStop.setOnClickListener {
-            Helper.stopService(this)
+            AppUtils.stopService(this)
         }
 
         // Listener for the start button
         binding.btnStart.setOnClickListener {
-            if (Helper.canDrawOverlay(this)) {
-                Helper.startService(this)
+            if (AppUtils.canDrawOverlay(this)) {
+                AppUtils.startService(this)
             } else {
-                Helper.requestOverlayPermission(this)
+                AppUtils.requestOverlayPermission(this)
                 Toast.makeText(
                     this,
                     getString(R.string.label_please_grant_the_permission_to_draw_over_other_apps),

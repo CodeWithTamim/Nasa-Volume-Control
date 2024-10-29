@@ -21,7 +21,7 @@ import com.nasahacker.nasavolumecontrol.util.Constant.PERMISSION_REQUEST_CODE
 import com.nasahacker.nasavolumecontrol.util.Constant.START_ON_BOOT
 
 
-object Helper {
+object AppUtils {
     /**
      * Checks the overlay permission
      * @param context
