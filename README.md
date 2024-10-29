@@ -29,16 +29,6 @@ To fully utilize **Nasa Volume Control**, the following permissions are required
 
 - **Modify Audio Settings**: Allows adjustment of different volume streams on your device.
 
-## 📱 Get It on Play Store
-
-Download **Nasa Volume Control** directly from the Google Play Store:
-
-<p align="left">
-  <a href="https://play.google.com/store/apps/details?id=com.nasahacker.nasavolumecontrol&hl=en" target="_blank">
-    <img alt="Get it on Google Play" src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="200"/>
-  </a>
-</p>
-
 ## 🚀 Technology Stack
 
 - **Programming Language**: Kotlin
