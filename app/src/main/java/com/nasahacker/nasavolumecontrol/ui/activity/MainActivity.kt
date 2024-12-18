@@ -1,4 +1,4 @@
-package com.nasahacker.nasavolumecontrol
+package com.nasahacker.nasavolumecontrol.ui.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
