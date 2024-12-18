@@ -7,7 +7,8 @@ import android.os.Build
 import androidx.core.app.NotificationManagerCompat
 import com.nasahacker.nasavolumecontrol.util.Constant
 
-class NasaApplication : Application() {
+class App : Application() {
+
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()

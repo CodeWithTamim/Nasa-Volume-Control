@@ -29,13 +29,16 @@ object Constant {
      * Request codes
      */
     const val PERMISSION_REQUEST_CODE = 101
+
     /**
      * Constants for opacity
      */
     const val LAYOUT_MAX_OPACITY = 1
     const val LAYOUT_MIN_OPACITY = 0.2
+
     /**
      * Seekbar progress
      */
     const val SEEK_BAR_MIN_PROGRESS = 30
+
 }

@@ -1,16 +1,17 @@
 package com.nasahacker.nasavolumecontrol.util
 
+
 import android.Manifest
 import android.app.Activity
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity.NOTIFICATION_SERVICE
 import androidx.core.app.ActivityCompat
 import com.nasahacker.nasavolumecontrol.R
 import com.nasahacker.nasavolumecontrol.service.VolumeControlService
@@ -21,7 +22,7 @@ import com.nasahacker.nasavolumecontrol.util.Constant.PERMISSION_REQUEST_CODE
 import com.nasahacker.nasavolumecontrol.util.Constant.START_ON_BOOT
 
 
-object AppUtils {
+object AppUtil {
     /**
      * Checks the overlay permission
      * @param context
@@ -175,10 +176,12 @@ object AppUtils {
     fun startService(context: Context) {
         if (!VolumeControlService.isServiceRunning) {
             if (canDrawOverlay(context)) {
-                context.startService(Intent(context, VolumeControlService::class.java))
+                val intent = Intent(context, VolumeControlService::class.java)
+                context.startService(intent)
             }
         }
     }
+
 
     /**
      * Stops the service
@@ -189,7 +192,10 @@ object AppUtils {
     fun stopService(context: Context) {
         if (VolumeControlService.isServiceRunning) {
             context.stopService(Intent(context, VolumeControlService::class.java))
+            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+            return
         }
+        Toast.makeText(context, "Not running currently", Toast.LENGTH_SHORT).show()
     }
 
     /**

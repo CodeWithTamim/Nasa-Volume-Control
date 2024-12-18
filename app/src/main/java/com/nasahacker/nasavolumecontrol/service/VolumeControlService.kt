@@ -1,15 +1,18 @@
 package com.nasahacker.nasavolumecontrol.service
 
+
 import android.app.Notification
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
+
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.media.AudioManager
 import android.os.Build
+
 import android.os.IBinder
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -21,18 +24,18 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import com.nasahacker.nasavolumecontrol.R
+import com.nasahacker.nasavolumecontrol.util.AppUtil
 import com.nasahacker.nasavolumecontrol.util.Constant
-import com.nasahacker.nasavolumecontrol.util.Constant.NOTIFICATION_CHANNEL_ID
 import com.nasahacker.nasavolumecontrol.util.Constant.NOTIFICATION_FOREGROUND_ID
-import com.nasahacker.nasavolumecontrol.util.AppUtils
+import com.nasahacker.nasavolumecontrol.R
+import com.nasahacker.nasavolumecontrol.util.Constant.NOTIFICATION_CHANNEL_ID
 
 class VolumeControlService : Service() {
 
-    // Service lifecycle method
+
     override fun onBind(intent: Intent?): IBinder? = null
 
-    // Class-level variables
+
     private lateinit var windowManager: WindowManager
     private lateinit var floatingView: View
     private lateinit var audioManager: AudioManager
@@ -52,7 +55,9 @@ class VolumeControlService : Service() {
     private lateinit var pgAlarm: SeekBar
     private lateinit var pgMedia: SeekBar
 
-    companion object { var isServiceRunning: Boolean = false }
+    companion object {
+        var isServiceRunning: Boolean = false
+    }
 
     private val volumeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -60,7 +65,6 @@ class VolumeControlService : Service() {
         }
     }
 
-    // Called when the service is created
     override fun onCreate() {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -77,17 +81,17 @@ class VolumeControlService : Service() {
         }
         isServiceRunning = true
 
-        // Initialize WindowManager and AudioManager
+        // initialize WindowManager and AudioManager
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
 
-        // Register volume change receiver
+        // reegister volume change receiver
         registerReceiver(volumeReceiver, IntentFilter(Constant.VOL_CHANGE_ACTION))
 
         // Inflate the floating view layout
-        if (!AppUtils.getIsAdvancedMode(this)) {
+        if (!AppUtil.getIsAdvancedMode(this)) {
             floatingView =
-                LayoutInflater.from(this).inflate(R.layout.floting_vol_layout_normal, null)
+                LayoutInflater.from(this).inflate(R.layout.normal_window, null)
             floatingView.findViewById<ImageView>(R.id.upButton).setOnClickListener {
                 increaseSound(AudioManager.STREAM_MUSIC)
             }
@@ -98,7 +102,7 @@ class VolumeControlService : Service() {
 
         } else {
             floatingView =
-                LayoutInflater.from(this).inflate(R.layout.floting_vol_layout_advanced, null)
+                LayoutInflater.from(this).inflate(R.layout.advanced_window, null)
             pgMedia = floatingView.findViewById(R.id.pgMedia)
             pgCall = floatingView.findViewById(R.id.pgCall)
             pgAlarm = floatingView.findViewById(R.id.pgAlarm)
@@ -111,7 +115,7 @@ class VolumeControlService : Service() {
             pgRingtone.max = getMaxVol(AudioManager.STREAM_RING)
             pgNotification.max = getMaxVol(AudioManager.STREAM_NOTIFICATION)
 
-            updateSeekBars() // Initialize SeekBar values
+            updateSeekBars()
 
             pgMedia.setOnSeekBarChangeListener(createSeekBarChangeListener(AudioManager.STREAM_MUSIC))
             pgCall.setOnSeekBarChangeListener(createSeekBarChangeListener(AudioManager.STREAM_VOICE_CALL))
@@ -121,9 +125,9 @@ class VolumeControlService : Service() {
         }
         muteButton = floatingView.findViewById(R.id.muteButton)
 
-        floatingView.alpha = AppUtils.getLayoutOpacity(this)
+        floatingView.alpha = AppUtil.getLayoutOpacity(this)
 
-        // Set up click listeners for buttons
+        // set up click listeners for buttons
         floatingView.findViewById<ImageView>(R.id.minMax).setOnClickListener {
             toggleVisibility()
         }
@@ -131,7 +135,7 @@ class VolumeControlService : Service() {
             toggleMute()
         }
 
-        // Check if the audio is initially muted
+        // check if the audio is initiallly muted
         isMuted = (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0)
 
         // Set up layout parameters for the floating view
@@ -152,15 +156,15 @@ class VolumeControlService : Service() {
             y = 100
         }
 
-        // Add the floating view to the window manager
+        // add the floating view to the window manager
         windowManager.addView(floatingView, params)
         isVisible = true
 
-        // Handle touch events for dragging the floating view
+        // handle touch events for dragging the floating view
         floatingView.setOnTouchListener { view, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    // Record initial touch position
+                    // record initial touch position
                     initialX = params.x
                     initialY = params.y
                     initialTouchX = event.rawX
@@ -170,7 +174,7 @@ class VolumeControlService : Service() {
                 }
 
                 MotionEvent.ACTION_MOVE -> {
-                    // Update the position of the floating view
+                    // update the position of the floating view
                     params.x = initialX + (event.rawX - initialTouchX).toInt()
                     params.y = initialY + (event.rawY - initialTouchY).toInt()
                     windowManager.updateViewLayout(floatingView, params)
@@ -179,7 +183,7 @@ class VolumeControlService : Service() {
                 }
 
                 MotionEvent.ACTION_UP -> {
-                    // Simulate a click event if not dragging
+                    // simulate a click event if not dragging
                     if (!isDragging) {
                         floatingView.performClick()
                     }
@@ -191,14 +195,14 @@ class VolumeControlService : Service() {
         }
     }
 
-    // Increase the media volume and show a toast message with volume percentage
+    // increase the media volume and show a toast message with volume percentage
     private fun increaseSound(type: Int) {
         audioManager.adjustStreamVolume(type, AudioManager.ADJUST_RAISE, 0)
         updateSeekBars() // Update SeekBars to reflect the change
         showVolumeToast()
     }
 
-    // Decrease the media volume and show a toast message with volume percentage
+    // decrease the media volume and show a toast message with volume percentage
     private fun decreaseSound(type: Int) {
         audioManager.adjustStreamVolume(type, AudioManager.ADJUST_LOWER, 0)
         updateSeekBars() // Update SeekBars to reflect the change
@@ -210,14 +214,14 @@ class VolumeControlService : Service() {
         return audioManager.getStreamMaxVolume(type)
     }
 
-    // Toggle the visibility of the floating view
+    // toggle the visibility of the floating view
     private fun toggleVisibility() {
         val mainLayout = floatingView.findViewById<LinearLayout>(R.id.mainLayout)
         mainLayout.visibility = if (isVisible) View.GONE else View.VISIBLE
         isVisible = !isVisible
     }
 
-    // Toggle mute state
+    // toggle mute state
     private fun toggleMute() {
         isMuted = !isMuted
         audioManager.setStreamVolume(
@@ -226,10 +230,10 @@ class VolumeControlService : Service() {
             0
         )
         updateSeekBars() // Update SeekBars to reflect the change
-        muteButton.setImageResource(if (isMuted) R.drawable.baseline_volume_off_24 else R.drawable.baseline_volume_mute_24)
+        muteButton.setImageResource(if (isMuted) R.drawable.volume_off_24px else R.drawable.volume_up_24px)
     }
 
-    // Update SeekBars to reflect the current system volume
+    // update SeekBars to reflect the current system volume
     private fun updateSeekBars() {
         if (this::pgMedia.isInitialized) {
             pgMedia.progress = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
@@ -240,7 +244,7 @@ class VolumeControlService : Service() {
         }
     }
 
-    // Create a SeekBar change listener for updating volume
+    // create a SeekBar change listener for updating volume
     private fun createSeekBarChangeListener(type: Int) = object : SeekBar.OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             if (fromUser) {
@@ -248,7 +252,7 @@ class VolumeControlService : Service() {
                     audioManager.setStreamVolume(type, progress, 0)
                 } catch (e: SecurityException) {
                     e.printStackTrace()
-                    AppUtils.requestDoNotDisturbAccess(this@VolumeControlService)
+                    AppUtil.requestDoNotDisturbAccess(this@VolumeControlService)
                 }
             }
         }
@@ -258,16 +262,20 @@ class VolumeControlService : Service() {
         override fun onStopTrackingTouch(seekBar: SeekBar?) {}
     }
 
-    // Show a toast message with the current volume percentage
+    // show a toast message with the current volume percentage
     private fun showVolumeToast() {
         val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val volumePercentage = (volume / maxVolume.toDouble() * 100).toInt()
-        Toast.makeText(this, getString(R.string.label_volume, volumePercentage), Toast.LENGTH_SHORT)
+        Toast.makeText(
+            this@VolumeControlService,
+            getString(R.string.label_volume, volumePercentage),
+            Toast.LENGTH_SHORT
+        )
             .show()
     }
 
-    // Get the notification for the foreground service
+    // get the notification for the foreground service
     private fun getNotification(): Notification {
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
         builder.setContentTitle(getString(R.string.label_volume_control_service))
@@ -278,7 +286,7 @@ class VolumeControlService : Service() {
     }
 
 
-    // Called when the service is destroyed
+    // called when the service is destroyed
     override fun onDestroy() {
         super.onDestroy()
         windowManager.removeView(floatingView)
